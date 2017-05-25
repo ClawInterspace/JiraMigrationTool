@@ -91,3 +91,9 @@ class RenameAttachAgent(object):
 
     def __init__(self, mig_info, proj_attach_root):
         pass
+
+    def remove_all_thumbs(self):
+        pass
+
+    def rename_all_files(self):
+        pass
