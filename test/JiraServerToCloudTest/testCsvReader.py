@@ -1,7 +1,7 @@
 # coding: utf-8
 import unittest
 
-from JiraServerToCloud.ServerExportedCsv import Reader
+from JiraServerToCloud.HelpTools import SrvExportedCsvReader
 
 
 class testCsvReader(unittest.TestCase):
@@ -13,7 +13,7 @@ class testCsvReader(unittest.TestCase):
 
         test_file = 'Cybersoft-Migration.csv'
 
-        csv_reader = Reader(test_file)
+        csv_reader = SrvExportedCsvReader(test_file)
         csv_reader.build_attach_name_info()
 
         for issue, info in csv_reader.issue_attach_info.iteritems():
@@ -51,7 +51,7 @@ class testCsvReader(unittest.TestCase):
 
         test_file = 'Cybersoft-Migration_中文.csv'
 
-        csv_reader = Reader(test_file)
+        csv_reader = SrvExportedCsvReader(test_file)
         csv_reader.build_attach_name_info()
 
         for issue, info in csv_reader.issue_attach_info.iteritems():

@@ -3,6 +3,8 @@ import logging
 import csv
 from itertools import count
 
+from MigrationInterface import IssueAttachmentMigrationInfo
+
 _logger = logging.getLogger(__name__)
 
 
@@ -13,13 +15,10 @@ def remap(fieldnames, duplicated_field_name):
             for f in fieldnames]
 
 
-class Reader(object):
+class SrvExportedCsvReader(object):
 
     issue_attach_info = {}
     # {old_issue_key: IssueAttachmentMigrationInfo}
-
-    issueid_attachments_map = {}
-    # {filepath: (old_filename, new_filename, old_issue_key)}
 
     def __init__(self, file_path):
         """
@@ -27,8 +26,6 @@ class Reader(object):
         :param file_path:
         """
         self.issue_attach_info = {}
-        self.issueid_attachments_map = {}
-
         self._file_path = file_path
 
     def build_attach_name_info(self):
@@ -86,24 +83,11 @@ class Reader(object):
         return file_id, file_name
 
 
-class IssueAttachmentMigrationInfo(object):
+class RenameAttachAgent(object):
 
-    CLOUD_BASE_URL = ''
-    CLOUD_USER_NAME = ''
-    CLOUD_PASSWORD = ''
+    """
+    Responsible for rename all attachment files to correct file name.
+    """
 
-    old_issue_key = ''
-    # an issue perhaps has more than one attachment
-    # [(file_id1, file_name1), (file_id2, file_name2)...]
-    attach_info = []
-
-    file_base_path = ''
-    new_issue_key = ''
-
-    def __init__(self):
-        self.attach_info = []
-
-    def display_all_attach_info(self):
-        print self.old_issue_key
-        for attach_info in self.attach_info:
-            print attach_info[0], attach_info[1]
+    def __init__(self, mig_info, proj_attach_root):
+        pass
