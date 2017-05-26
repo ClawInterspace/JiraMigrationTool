@@ -2,6 +2,8 @@
 import logging
 import csv
 from itertools import count
+import os
+import shutil
 
 from MigrationInterface import IssueAttachmentMigrationInfo
 
@@ -87,13 +89,32 @@ class RenameAttachAgent(object):
 
     """
     Responsible for rename all attachment files to correct file name.
+    # TODO: doesn't know project id from exported file
     """
 
-    def __init__(self, mig_info, proj_attach_root):
-        pass
+    def __init__(self, mig_info, old_proj_key, proj_attach_root):
+
+        # get project folder absolutely path
+        self._proj_key = old_proj_key
+        self._proj_attach_root = os.path.abspath(proj_attach_root)
+        self.mig_info = mig_info
 
     def remove_all_thumbs(self):
-        pass
+
+        proj_root_dir = self._proj_attach_root
+
+        all_issue_dirs = []
+        for file_or_dir in os.listdir(proj_root_dir):
+
+            cur_path = os.path.join(proj_root_dir, file_or_dir)
+            if os.path.isdir(cur_path):
+                all_issue_dirs.append(cur_path)
+                try: # remove all thumbs
+                    thumbs_dir = os.path.join(cur_path, 'thumbs')
+                    shutil.rmtree(thumbs_dir)
+                except Exception:
+                    print 'Remove "%s" failed' % thumbs_dir
+
 
     def rename_all_files(self):
         pass

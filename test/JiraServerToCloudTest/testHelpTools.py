@@ -1,7 +1,8 @@
 # coding: utf-8
 import unittest
+import os
 
-from JiraServerToCloud.HelpTools import SrvExportedCsvReader
+from JiraServerToCloud.HelpTools import SrvExportedCsvReader, RenameAttachAgent
 
 
 class testCsvReader(unittest.TestCase):
@@ -67,6 +68,16 @@ class testCsvReader(unittest.TestCase):
             ('10201', '螢幕快照 2013-12-05 下午10.16.24.jpg'),
             csv_reader.issue_attach_info.get('MIG-2').attach_info)
 
+    def test_rename_attach_agent(self):
+
+        home_path = os.path.expanduser('~')
+
+        rename_agent = RenameAttachAgent(
+            '',
+            'MIG',
+            home_path + r'/Dropbox/Code/github/JiraMigrationTool/test/JiraServerToCloudTest/data/attachments/MIG/10000'
+        )
+        rename_agent.remove_all_thumbs()
 
 
 if __name__ == '__main__':
