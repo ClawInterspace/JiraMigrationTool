@@ -97,9 +97,13 @@ class RenameAttachAgent(object):
         # get project folder absolutely path
         self._proj_key = old_proj_key
         self._proj_attach_root = os.path.abspath(proj_attach_root)
-        self.mig_info = mig_info
+        self.issue_migra_data = mig_info
 
     def remove_all_thumbs(self):
+        """
+
+        :return:
+        """
 
         proj_root_dir = self._proj_attach_root
 
@@ -109,12 +113,31 @@ class RenameAttachAgent(object):
             cur_path = os.path.join(proj_root_dir, file_or_dir)
             if os.path.isdir(cur_path):
                 all_issue_dirs.append(cur_path)
-                try: # remove all thumbs
+                # remove all thumbs
+                try:
                     thumbs_dir = os.path.join(cur_path, 'thumbs')
                     shutil.rmtree(thumbs_dir)
                 except Exception:
-                    print 'Remove "%s" failed' % thumbs_dir
+                    _logger.error('Remove "%s" failed' % thumbs_dir)
 
+        return True
 
     def rename_all_files(self):
-        pass
+
+        proj_root_dir = self._proj_attach_root
+        migrate_data = self.issue_migra_data
+
+        {}.iteritems()
+        for issue_key, issue_info in migrate_data.iteritems():
+            for file_id, file_name in dict(issue_info.attach_info).iteritems():
+                old_attach_path = os.path.join(proj_root_dir, issue_key, file_id)
+                new_attach_path = os.path.join(proj_root_dir, issue_key, file_name)
+                if os.path.isfile(old_attach_path):
+                    try:
+                        os.rename(old_attach_path, new_attach_path)
+                    except Exception:
+                        _logger.error('Rename "{%s}" failed' % old_attach_path)
+                else:
+                    _logger.error('Cannot find "%s"' % old_attach_path)
+
+        return True
