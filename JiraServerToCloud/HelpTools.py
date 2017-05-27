@@ -8,8 +8,6 @@ import shutil
 
 from MigrationInterface import IssueAttachmentMigrationInfo
 
-_logger = logging.getLogger(__name__)
-
 
 def remap(fieldnames, duplicated_field_name):
     price_count = count(1)
@@ -51,7 +49,7 @@ class SrvExportedCsvReader(object):
                 tmp_issue = IssueAttachmentMigrationInfo()
                 tmp_issue.old_issue_key = row[fn_issue_key]
 
-                _logger.debug(row[fn_issue_key])
+                logging.debug(row[fn_issue_key])
 
                 for field_name, field_value in row.iteritems():
                     if field_name.startswith(fn_attachment) and field_value.strip() != "":
@@ -121,7 +119,7 @@ class UploadAttachAgent(object):
                     thumbs_dir = os.path.join(cur_path, 'thumbs')
                     shutil.rmtree(thumbs_dir)
                 except Exception:
-                    _logger.error('Remove "%s" failed' % thumbs_dir)
+                    logging.error('Remove "%s" failed' % thumbs_dir)
 
         return True
 
@@ -138,9 +136,9 @@ class UploadAttachAgent(object):
                     try:
                         os.rename(old_attach_path, new_attach_path)
                     except Exception:
-                        _logger.error('Rename "{%s}" failed' % old_attach_path)
+                        logging.error('Rename "{%s}" failed' % old_attach_path)
                 else:
-                    _logger.error('Cannot find "%s"' % old_attach_path)
+                    logging.error('Cannot find "%s"' % old_attach_path)
 
         return True
 
@@ -173,5 +171,5 @@ class UploadAttachAgent(object):
                     jira_url=jira_url,
                     issue_key=issue_key)
 
-        _logger.debug(cmd)
+        logging.debug(cmd)
         subprocess.call(cmd, shell=True)
