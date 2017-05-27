@@ -76,13 +76,14 @@ class testCsvReader(unittest.TestCase):
 
         home_path = os.path.expanduser('~')
 
-        rename_agent = UploadAttachAgent(
+        upload_agent = UploadAttachAgent(
             csv_reader.issue_attach_info,
             'MIG',
             home_path + r'/Dropbox/Code/github/JiraMigrationTool/test/JiraServerToCloudTest/data/attachments/MIG/10000'
         )
-        rename_agent.remove_all_thumbs()
-        rename_agent.rename_all_files()
+        upload_agent.remove_all_thumbs()
+        upload_agent.rename_all_files()
+        upload_agent.upload_all_attachs('MAN')
 
 
 if __name__ == '__main__':

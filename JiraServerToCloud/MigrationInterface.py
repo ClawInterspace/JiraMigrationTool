@@ -19,3 +19,7 @@ class IssueAttachmentMigrationInfo(object):
         print self.old_issue_key
         for attach_info in self.attach_info:
             print attach_info[0], attach_info[1]
+
+    @property
+    def issue_id(self):
+        return self.old_issue_key.split('-')[-1]

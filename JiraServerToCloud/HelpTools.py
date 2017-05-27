@@ -3,6 +3,7 @@ import logging
 import csv
 from itertools import count
 import os
+import subprocess
 import shutil
 
 from MigrationInterface import IssueAttachmentMigrationInfo
@@ -79,13 +80,15 @@ class SrvExportedCsvReader(object):
             file_url = segments[3]
             file_id = file_url.strip().split('/')[-2]
 
+            file_name_encode = file_name.replace(' ', '_')
+
         except Exception as e:
             raise Exception('cell value format error: "%s"' % cell_value)
 
-        return file_id, file_name
+        return file_id, file_name_encode
 
 
-class RenameAttachAgent(object):
+class UploadAttachAgent(object):
 
     """
     Responsible for rename all attachment files to correct file name.
@@ -127,7 +130,6 @@ class RenameAttachAgent(object):
         proj_root_dir = self._proj_attach_root
         migrate_data = self.issue_migra_data
 
-        {}.iteritems()
         for issue_key, issue_info in migrate_data.iteritems():
             for file_id, file_name in dict(issue_info.attach_info).iteritems():
                 old_attach_path = os.path.join(proj_root_dir, issue_key, file_id)
@@ -141,3 +143,35 @@ class RenameAttachAgent(object):
                     _logger.error('Cannot find "%s"' % old_attach_path)
 
         return True
+
+    def upload_all_attachs(self, new_proj_key):
+
+        proj_root_dir = self._proj_attach_root
+        migrate_data = self.issue_migra_data
+
+        for issue_key, issue_info in migrate_data.iteritems():
+            for file_id, file_name in dict(issue_info.attach_info).iteritems():
+                file_path = os.path.join(proj_root_dir, issue_key, file_name)
+                # upload the attachment
+                cloud_issue_key = new_proj_key + '-' + issue_info.issue_id
+                self.upload_attach(
+                    'xxx',
+                    'xxx',
+                    file_path,
+                    r'www',
+                    cloud_issue_key
+                )
+
+    @classmethod
+    def upload_attach(cls, jira_usr_name, jira_pwd, file_path, jira_url, issue_key):
+
+        cmd = r'curl -D- -u {username}:{password} -X POST -H "X-Atlassian-Token: nocheck" ' \
+              r'-F "file=@{file}" {jira_url}/rest/api/2/issue/{issue_key}/attachments'\
+            .format(username=jira_usr_name,
+                    password=jira_pwd,
+                    file=file_path,
+                    jira_url=jira_url,
+                    issue_key=issue_key)
+
+        _logger.debug(cmd)
+        subprocess.call(cmd, shell=True)
