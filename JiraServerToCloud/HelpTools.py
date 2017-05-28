@@ -5,6 +5,7 @@ from itertools import count
 import os
 import subprocess
 import shutil
+import shlex
 
 from MigrationInterface import IssueAttachmentMigrationInfo
 
@@ -14,6 +15,19 @@ def remap(fieldnames, duplicated_field_name):
     return [duplicated_field_name + '{}'.format(next(price_count))
             if f.startswith(duplicated_field_name) else f
             for f in fieldnames]
+
+
+def get_exitcode_stdout_stderr(cmd):
+    """
+    Execute the external command and get its exitcode, stdout and stderr.
+    """
+    args = shlex.split(cmd)
+
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+    exitcode = proc.returncode
+    #
+    return exitcode, out, err
 
 
 class SrvExportedCsvReader(object):
@@ -177,4 +191,9 @@ class UploadAttachAgent(object):
                     issue_key=issue_key)
 
         logging.debug(cmd)
-        subprocess.call(cmd, shell=True)
+        args = shlex.split(cmd)
+        # subprocess.call(cmd, shell=True)
+        exitcode, out, err = get_exitcode_stdout_stderr(cmd)
+        logging.info(out)
+        logging.error(err)
+
