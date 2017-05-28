@@ -70,6 +70,8 @@ class testCsvReader(unittest.TestCase):
 
     def test_rename_attach_agent(self):
 
+        # TODO: modify to generalize approach to deal with path
+
         test_file = r'./data/exported.csv'
         csv_reader = SrvExportedCsvReader(test_file)
         csv_reader.build_attach_name_info()
@@ -83,7 +85,7 @@ class testCsvReader(unittest.TestCase):
         )
         upload_agent.remove_all_thumbs()
         upload_agent.rename_all_files()
-        upload_agent.upload_all_attachs('MAN')
+        upload_agent.upload_all_attachs()
 
 
 if __name__ == '__main__':

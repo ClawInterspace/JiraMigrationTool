@@ -93,12 +93,13 @@ class UploadAttachAgent(object):
     # TODO: doesn't know project id from exported file
     """
 
-    def __init__(self, mig_info, old_proj_key, proj_attach_root):
+    def __init__(self, issue_migra_info, upload_info):
 
         # get project folder absolutely path
-        self._proj_key = old_proj_key
-        self._proj_attach_root = os.path.abspath(proj_attach_root)
-        self.issue_migra_data = mig_info
+        self._src_proj_key = upload_info.SOURCE_PROJECT_KEY
+        self._proj_attach_root = os.path.abspath(upload_info.PROJECT_ATTACHMENT_DATA_DIR)
+        self.issue_migra_info = issue_migra_info
+        self.upload_info = upload_info
 
     def remove_all_thumbs(self):
         """
@@ -126,7 +127,7 @@ class UploadAttachAgent(object):
     def rename_all_files(self):
 
         proj_root_dir = self._proj_attach_root
-        migrate_data = self.issue_migra_data
+        migrate_data = self.issue_migra_info
 
         for issue_key, issue_info in migrate_data.iteritems():
             for file_id, file_name in dict(issue_info.attach_info).iteritems():
@@ -142,26 +143,30 @@ class UploadAttachAgent(object):
 
         return True
 
-    def upload_all_attachs(self, new_proj_key):
+    def upload_all_attachs(self):
 
         proj_root_dir = self._proj_attach_root
-        migrate_data = self.issue_migra_data
+        migrate_data = self.issue_migra_info
+        upload_info = self.upload_info
 
         for issue_key, issue_info in migrate_data.iteritems():
             for file_id, file_name in dict(issue_info.attach_info).iteritems():
                 file_path = os.path.join(proj_root_dir, issue_key, file_name)
                 # upload the attachment
-                cloud_issue_key = new_proj_key + '-' + issue_info.issue_id
+                cloud_issue_key = upload_info.DESTINATION_PROJECT_KEY\
+                                  + '-' + issue_info.issue_id
+
                 self.upload_attach(
-                    'xxx',
-                    'xxx',
+                    upload_info.JIRA_CLOUD_USER_NAME,
+                    upload_info.JRIA_CLOUD_PASSWORD,
                     file_path,
-                    r'www',
+                    upload_info.JIRA_CLOUD_BASE_URL,
                     cloud_issue_key
                 )
 
     @classmethod
     def upload_attach(cls, jira_usr_name, jira_pwd, file_path, jira_url, issue_key):
+        # TODO: modify to PyCurl
 
         cmd = r'curl -D- -u {username}:{password} -X POST -H "X-Atlassian-Token: nocheck" ' \
               r'-F "file=@{file}" {jira_url}/rest/api/2/issue/{issue_key}/attachments'\

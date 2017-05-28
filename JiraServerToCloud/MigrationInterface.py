@@ -23,3 +23,15 @@ class IssueAttachmentMigrationInfo(object):
     @property
     def issue_id(self):
         return self.old_issue_key.split('-')[-1]
+
+
+class UploadInfo:
+
+    JIRA_CLOUD_BASE_URL = ''
+    JIRA_CLOUD_USER_NAME = ''
+    JRIA_CLOUD_PASSWORD = ''
+
+    EXPORTED_CSV_PATH = ''
+    PROJECT_ATTACHMENT_DATA_DIR = ''
+    SOURCE_PROJECT_KEY = ''
+    DESTINATION_PROJECT_KEY = ''
